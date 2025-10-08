@@ -30,13 +30,13 @@ A RESTful API and Streamlit frontend to compare similarity between two texts or 
    python -m venv venv
    source venv/bin/activate  # Linux/macOS
    venv\Scripts\activate     # Windows
-   ```
+   ````
 
 3. Install dependencies:
 
    ```bash
    pip install -r requirements.txt
-   ```
+   ````
 
 ---
 
@@ -46,7 +46,7 @@ Start the FastAPI server with:
 
 ```bash
 uvicorn app.main:app --reload
-```
+````
 
 The API will be available at [http://127.0.0.1:8000](http://127.0.0.1:8000).
 
@@ -81,7 +81,7 @@ To run the interactive frontend:
 
 ```bash
 streamlit run streamlit_app.py
-```
+````
 
 Features:
 
@@ -101,7 +101,7 @@ Run:
 
 ```bash
 python test_api.py
-```
+````
 
 ---
 
@@ -116,7 +116,7 @@ app/
 streamlit_app.py          # Streamlit frontend
 test_api.py               # API test script
 requirements.txt          # Dependencies
-```
+````
 
 ---
 
@@ -140,4 +140,4 @@ requirements.txt          # Dependencies
 Feel free to replace `<your-repo-url>` and `<your-project-folder>` with your actual repo URL and folder name.
 
 If you want, I can also help generate the **LICENSE** file or a shorter **Contributing** section for the README. Just say the word!
-```
+````
