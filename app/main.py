@@ -1,6 +1,13 @@
-from fastapi import FastAPI, UploadFile, Form
+# app.py
+
+from fastapi import FastAPI, UploadFile, Form, HTTPException
+from enum import Enum
 from app.similarity_engine import compute_similarity
 from app.utils import clean_text
+
+class SimilarityMethod(str, Enum):
+    tfidf = "tfidf"
+    semantic = "semantic"
 
 app = FastAPI(
     title="Text Similarity REST API",
@@ -16,11 +23,15 @@ def root():
 async def compare_texts(
     text1: str = Form(...),
     text2: str = Form(...),
-    method: str = Form("tfidf")
+    method: SimilarityMethod = Form(SimilarityMethod.tfidf)
 ):
     clean1 = clean_text(text1)
     clean2 = clean_text(text2)
-    result = compute_similarity(clean1, clean2, method)
+    try:
+        result = compute_similarity(clean1, clean2, method)
+    except ValueError as e:
+        raise HTTPException(status_code=400, detail=str(e))
+
     return {
         "similarity_score": result["score"],
         "method_used": result["method"],
@@ -28,12 +39,16 @@ async def compare_texts(
     }
 
 @app.post("/compare-files/")
-async def compare_files(file1: UploadFile, file2: UploadFile, method: str = Form("tfidf")):
+async def compare_files(file1: UploadFile, file2: UploadFile, method: SimilarityMethod = Form(SimilarityMethod.tfidf)):
     text1 = (await file1.read()).decode("utf-8")
     text2 = (await file2.read()).decode("utf-8")
     clean1 = clean_text(text1)
     clean2 = clean_text(text2)
-    result = compute_similarity(clean1, clean2, method)
+    try:
+        result = compute_similarity(clean1, clean2, method)
+    except ValueError as e:
+        raise HTTPException(status_code=400, detail=str(e))
+
     return {
         "similarity_score": result["score"],
         "method_used": result["method"],
