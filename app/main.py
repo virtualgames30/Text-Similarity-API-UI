@@ -1,4 +1,4 @@
-# app.py
+# main.py
 
 from fastapi import FastAPI, UploadFile, Form, HTTPException
 from enum import Enum
