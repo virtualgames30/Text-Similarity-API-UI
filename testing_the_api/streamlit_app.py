@@ -2,10 +2,27 @@
 
 import streamlit as st
 import requests
+from PIL import Image
 
 st.set_page_config(page_title="Text Similarity Checker", page_icon="🔍", layout="centered")
-st.title("📝 Text Similarity API Frontend")
-st.markdown("Upload files or paste text to check similarity between two texts.")
+st.title("📝 Document Similarity Checker API Frontend")
+st.markdown("##### Upload files or paste text to check similarity between two texts.")
+
+# Open the image file
+img = Image.open(r"C:\Users\futan\Desktop\masters project\similarity checker image.jpg")
+
+# Define the target height and maintain the aspect ratio
+target_height = 400  # Set the desired height here
+width, height = img.size
+aspect_ratio = width / height
+new_width = int(target_height * aspect_ratio)
+
+# Resize the image
+img_resized = img.resize((new_width, target_height))
+
+# Display the resized image
+st.image(img_resized, caption="Document Similarity Checker", width=700)
+
 
 # Initialize session state for history
 if "history" not in st.session_state:
