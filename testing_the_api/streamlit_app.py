@@ -1,8 +1,36 @@
-# streamlit_app.py
-
 import streamlit as st
 import requests
 from PIL import Image
+import pdfplumber
+from docx import Document
+import io
+
+# Helper function to extract text from a .pdf file
+def extract_text_from_pdf(file):
+    with pdfplumber.open(file) as pdf:
+        text = ""
+        for page in pdf.pages:
+            text += page.extract_text()
+        return text
+
+# Helper function to extract text from a .docx file
+def extract_text_from_docx(file):
+    doc = Document(io.BytesIO(file.read()))
+    text = ""
+    for para in doc.paragraphs:
+        text += para.text + "\n"
+    return text
+
+# Helper function to read and extract text from different file formats
+def extract_text_from_file(file):
+    if file.type == "application/pdf":
+        return extract_text_from_pdf(file)
+    elif file.type == "application/vnd.openxmlformats-officedocument.wordprocessingml.document":
+        return extract_text_from_docx(file)
+    elif file.type == "text/plain":
+        return file.read().decode("utf-8")
+    else:
+        raise ValueError("Unsupported file format")
 
 st.set_page_config(page_title="Text Similarity Checker", page_icon="🔍", layout="centered")
 st.title("📝 Document Similarity Checker API Frontend")
@@ -23,7 +51,6 @@ img_resized = img.resize((new_width, target_height))
 # Display the resized image
 st.image(img_resized, caption="Document Similarity Checker", width=700)
 
-
 # Initialize session state for history
 if "history" not in st.session_state:
     st.session_state.history = []
@@ -36,8 +63,8 @@ with tab1:
     text2 = st.text_area("Text 2", height=150)
 
 with tab2:
-    file1 = st.file_uploader("Upload first text file", type=["txt"])
-    file2 = st.file_uploader("Upload second text file", type=["txt"])
+    file1 = st.file_uploader("Upload first text file", type=["txt", "pdf", "docx"])
+    file2 = st.file_uploader("Upload second text file", type=["txt", "pdf", "docx"])
 
 method = st.radio("Choose similarity method:", options=("tfidf", "semantic"))
 
@@ -49,8 +76,15 @@ if st.button("Compare Similarity"):
 
     # Read content from files or textareas
     try:
-        content1 = file1.read().decode("utf-8") if file1 else text1
-        content2 = file2.read().decode("utf-8") if file2 else text2
+        if file1:
+            content1 = extract_text_from_file(file1)
+        else:
+            content1 = text1
+
+        if file2:
+            content2 = extract_text_from_file(file2)
+        else:
+            content2 = text2
     except Exception as e:
         st.error(f"Error reading files: {e}")
         st.stop()
